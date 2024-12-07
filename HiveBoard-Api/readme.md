@@ -11,3 +11,4 @@ npm install -D typescript tsx @types/express
 
 copy tsconfig.json file
 
+using thunder client
