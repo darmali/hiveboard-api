@@ -19,3 +19,8 @@ npm i drizzle-orm pg
 
 npx drizzle-kit push    //for pushing schema DB
 npx drizzle-kit studio    
+
+
+for validations https://express-validator.github.io/docs/guides
+
+there is tool zod-drizzle for validation use on schema
