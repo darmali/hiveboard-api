@@ -24,3 +24,9 @@ npx drizzle-kit studio
 for validations https://express-validator.github.io/docs/guides
 
 there is tool zod-drizzle for validation use on schema
+npm i drizzle-zod
+
+
+
+install lodash - npm i lodash
+npm i --save-dev @types/lodash
