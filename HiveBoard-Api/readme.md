@@ -12,3 +12,10 @@ npm install -D typescript tsx @types/express
 copy tsconfig.json file
 
 using thunder client
+
+using Drizzle for ORM DB https://orm.drizzle.team/
+for Postgresql https://orm.drizzle.team/docs/get-started/postgresql-new
+npm i drizzle-orm pg
+
+npx drizzle-kit push    //for pushing schema DB
+npx drizzle-kit studio    
