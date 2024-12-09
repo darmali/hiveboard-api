@@ -33,11 +33,18 @@ npm i lodash
 npm i --save-dev @types/lodash
 
 for encrypt password we are going to use this - 
-npm install bcrypt
-npm i --save-dev @types/bcrypt   
+npm install bcryptjs
+npm i --save-dev @types/bcryptjs   
 
 
 for JWT token 
 npm install jsonwebtoken
 npm i --save-dev @types/jsonwebtoken   
+
+deployment
+https://genezio.com/docs/frameworks/expressjs/
+
+npm install serverless-http
+
+
 
