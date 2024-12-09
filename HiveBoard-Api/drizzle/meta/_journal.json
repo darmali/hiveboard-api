@@ -22,6 +22,13 @@
       "when": 1733660702226,
       "tag": "0002_orange_puck",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1733738750017,
+      "tag": "0003_sweet_vermin",
+      "breakpoints": true
     }
   ]
 }

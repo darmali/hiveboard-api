@@ -28,5 +28,16 @@ npm i drizzle-zod
 
 
 
-install lodash - npm i lodash
+install lodash - 
+npm i lodash
 npm i --save-dev @types/lodash
+
+for encrypt password we are going to use this - 
+npm install bcrypt
+npm i --save-dev @types/bcrypt   
+
+
+for JWT token 
+npm install jsonwebtoken
+npm i --save-dev @types/jsonwebtoken   
+

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { db } from "../../db/index";
-import { productsTable } from "../../db/productsSchema";
+import { db } from "../../db/index.js";
+import { productsTable } from "../../db/productsSchema.js";
 import { asc, eq } from "drizzle-orm";
-import { withPagination } from "../../utils/dbHelper";
+import { withPagination } from "../../utils/dbHelper.js";
 import _ from "lodash";
 
 export async function listProducts(req: Request, res: Response) {

@@ -5,13 +5,14 @@ import {
   getProductById,
   listProducts,
   updateProduct,
-} from "./productController";
-import { validateData } from "../../midllewares/validationMidlleware";
-import {z} from "zod";
+} from "./productController.js";
+import { validateData } from "../../midllewares/validationMidlleware.js";
+import { z } from "zod";
 import {
   createProductSchema,
   updateProductSchema,
-} from '../../db/productsSchema.js';
+} from "../../db/productsSchema.js";
+import { verifyToken, verifySeller } from "../../midllewares/authMiddleware.js";
 
 // const createProductSchema = z.object(
 //   {
@@ -20,18 +21,28 @@ import {
 //   }
 // );
 
-
-
 const productsRouter = Router();
 
 productsRouter.get("/", listProducts);
 
 productsRouter.get("/:id", getProductById);
 
-productsRouter.post("/", validateData(createProductSchema), createProduct);
+productsRouter.post(
+  "/",
+  verifyToken,
+  verifySeller,
+  validateData(createProductSchema),
+  createProduct
+);
 
-productsRouter.put("/:id", validateData(updateProductSchema), updateProduct);
+productsRouter.put(
+  "/:id",
+  verifyToken,
+  verifySeller,
+  validateData(updateProductSchema),
+  updateProduct
+);
 
-productsRouter.delete("/:id", deleteProduct);
+productsRouter.delete("/:id", verifyToken, verifySeller, deleteProduct);
 
-export { productsRouter };
+export default productsRouter;
