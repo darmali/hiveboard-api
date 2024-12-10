@@ -21,11 +21,6 @@ type DashboardLayoutProps = {
 };
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const token = cookies().get('token')?.value;
-
-  if (!token) {
-    return redirect('/login');
-  }
 
   return (
     <div className="h-screen overflow-hidden">
