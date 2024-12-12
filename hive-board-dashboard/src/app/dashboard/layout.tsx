@@ -3,17 +3,16 @@ import { Box } from '@/components/ui/box';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { Text } from '@/components/ui/text';
 import Link from 'next/link';
 import {
   Icon,
   MenuIcon,
-  MessageCircleIcon,
   StarIcon,
   ThreeDotsIcon,
+  LoaderIcon
 } from '@/components/ui/icon';
+import { Suspense } from 'react';
 // import { HomeIcon } from 'lucide-react-native';
 
 type DashboardLayoutProps = {
@@ -23,6 +22,9 @@ type DashboardLayoutProps = {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
+    <Suspense fallback={<div className='flex-1 min-h-screen justify-center items-center'>
+      <div className='text-2xl font-bold'><Icon as={LoaderIcon} className='animate-spin'/></div>
+    </div>}>
     <div className="h-screen overflow-hidden">
       {/* Header */}
       <Header />
@@ -34,6 +36,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <MobileNavbar />
     </div>
+    </Suspense>
   );
 }
 

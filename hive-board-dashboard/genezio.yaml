@@ -1,0 +1,9 @@
+name: hive-board-dashboard
+region: eu-central-1
+yamlVersion: 2
+nextjs:
+    path: .
+    packageManager: npm
+    scripts:
+        deploy:
+            - npm install

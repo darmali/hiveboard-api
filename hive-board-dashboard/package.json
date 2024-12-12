@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@expo/html-elements": "^0.4.2",
+    "@genezio/nextjs-isr-eu-central-1": "^1.0.6",
+    "@genezio/nextjs-isr-us-east-1": "^1.0.6",
     "@gluestack-ui/actionsheet": "^0.2.46",
     "@gluestack-ui/avatar": "^0.1.18",
     "@gluestack-ui/button": "^1.0.8",

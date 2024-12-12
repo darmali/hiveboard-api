@@ -8,7 +8,6 @@ import { HStack } from '@/components/ui/hstack';
 import { Button, ButtonText } from '@/components/ui/button';
 import { useState } from 'react';
 import { Box } from '@/components/ui/box';
-import { login, signup } from '@/api/auth';
 import { handleLogin, handleSignup } from './actions';
 import { useSearchParams } from 'next/navigation';
 

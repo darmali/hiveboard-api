@@ -4,12 +4,6 @@ import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import dayjs from 'dayjs';
 import { Heading } from '@/components/ui/heading';
-import {
-  Select,
-  SelectIcon,
-  SelectInput,
-  SelectTrigger,
-} from '@/components/ui/select';
 import StatusSelector from './StatusSelector';
 import { Box } from '@/components/ui/box';
 

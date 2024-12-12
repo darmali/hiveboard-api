@@ -1,3 +1,5 @@
+'use server';
+
 import { API_URL } from '@/config';
 import { cookies } from 'next/headers';
 
