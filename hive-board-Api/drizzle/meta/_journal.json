@@ -1,0 +1,48 @@
+{
+  "version": "0",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1734094755844,
+      "tag": "0000_cute_pestilence",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1734101223179,
+      "tag": "0001_silly_lily_hollister",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1734108995358,
+      "tag": "0002_lethal_proudstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1734110184505,
+      "tag": "0003_eminent_warlock",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1734120534769,
+      "tag": "0004_sweet_vanisher",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1734125025638,
+      "tag": "0005_dear_psylocke",
+      "breakpoints": true
+    }
+  ]
+}
