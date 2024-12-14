@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ADD COLUMN "project_address" varchar(255);

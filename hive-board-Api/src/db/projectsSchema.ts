@@ -31,6 +31,7 @@ export const projectsTable = pgTable(
     project_name: varchar({ length: 255 }).notNull(),
     latitude: doublePrecision(),
     longitude: doublePrecision(),
+    project_address: varchar({ length: 255 }),
     project_description: varchar({ length: 255 }),
     company_id: integer().references(() => companiesTable.company_id),
     project_status: projectStatusEnum("project_status").array(),

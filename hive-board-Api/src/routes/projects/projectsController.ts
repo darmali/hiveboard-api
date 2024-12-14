@@ -1,8 +1,9 @@
 import { query, Request, Response } from "express";
 import { and, eq, inArray, not } from "drizzle-orm";
-import { projectsTable, projectsUsersTable } from "../../db/projectsSchema.js";
+import { projectsGroupsTable, projectsTable, projectsUsersTable } from "../../db/projectsSchema.js";
 import { db } from "../../db/index.js";
 import { usersTable } from "../../db/usersSchema.js";
+import { groupsTable } from "../../db/groupsSchema.js";
 
 // Types
 interface ProjectData {
@@ -80,17 +81,21 @@ const findProjectByLocation = async (
 
 // Controller functions
 export const getProjects = async (req: Request, res: Response) => {
-  const { company_id } = req.company;
-  const projects = await db
-    .select()
-    .from(projectsTable)
-    .where(
-      and(
-        eq(projectsTable.company_id, company_id),
-        eq(projectsTable.project_is_deleted, false)
-      )
-    );
-  res.json(projects);
+  try {
+    const { company_id } = req.company;
+    const projects = await db
+      .select()
+      .from(projectsTable)
+      .where(
+        and(
+          eq(projectsTable.company_id, company_id),
+          eq(projectsTable.project_is_deleted, false)
+        )
+      );
+    res.json(projects);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 export const createProject = async (req: Request, res: Response) => {
@@ -281,11 +286,16 @@ export const updateProject = async (req: Request, res: Response) => {
 export const deleteProject = async (req: Request, res: Response) => {
   try {
     const { project_id } = req.params;
+    const { userId } = req;
     const { company_id } = req.company;
 
     const project = await db
       .update(projectsTable)
-      .set({ project_is_deleted: true })
+      .set({
+        project_is_deleted: true,
+        updated_by: userId,
+        updated_at: new Date(),
+      })
       .where(
         and(
           eq(projectsTable.project_id, Number(project_id)),
@@ -306,6 +316,7 @@ export const deleteProject = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 export const assignUsersToProject = async (req: Request, res: Response) => {
   try {
     const { project_id } = req.params;
@@ -343,10 +354,14 @@ export const assignUsersToProject = async (req: Request, res: Response) => {
       );
 
     if (users.length !== user_ids.length) {
-      const foundUserIds = users.map(user => user.user_id);
-      const missingUserIds = user_ids.filter(id => !foundUserIds.includes(Number(id)));
+      const foundUserIds = users.map((user) => user.user_id);
+      const missingUserIds = user_ids.filter(
+        (id) => !foundUserIds.includes(Number(id))
+      );
       return res.status(404).json({
-        error: `Users with IDs: ${missingUserIds.join(', ')} not found in company: ${company_name}`,
+        error: `Users with IDs: ${missingUserIds.join(
+          ", "
+        )} not found in company: ${company_name}`,
       });
     }
 
@@ -362,15 +377,19 @@ export const assignUsersToProject = async (req: Request, res: Response) => {
       );
 
     if (existingAssignments.length > 0) {
-      const duplicateUserIds = existingAssignments.map(assignment => assignment.user_id);
+      const duplicateUserIds = existingAssignments.map(
+        (assignment) => assignment.user_id
+      );
       return res.status(400).json({
-        error: `Users with IDs: ${duplicateUserIds.join(', ')} are already assigned to this project name: ${project.project_name}`,
+        error: `Users with IDs: ${duplicateUserIds.join(
+          ", "
+        )} are already assigned to this project name: ${project.project_name}`,
       });
     }
 
     // Create new assignments in transaction
     await db.transaction(async (tx) => {
-      const assignments = user_ids.map(user_id => ({
+      const assignments = user_ids.map((user_id) => ({
         project_id: Number(project_id),
         user_id: Number(user_id),
       }));
@@ -381,9 +400,281 @@ export const assignUsersToProject = async (req: Request, res: Response) => {
     return res.status(200).json({
       message: `Users successfully assigned to project: ${project.project_name}`,
     });
+  } catch (error) {
+    console.error("Error in assignUsersToProject:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const unassignUsersFromProject = async (req: Request, res: Response) => {
+  const { project_id } = req.params;
+  const { user_ids } = req.body;
+  const { company_id, company_name } = req.company;
+
+  try {
+    const [project] = await db
+      .select()
+      .from(projectsTable)
+      .where(
+        and(
+          eq(projectsTable.project_id, Number(project_id)),
+          eq(projectsTable.company_id, Number(company_id)),
+          eq(projectsTable.project_is_deleted, false)
+        )
+      )
+      .limit(1);
+
+    if (!project) {
+      return res.status(404).json({
+        error: `Project ${project_id} not found for company: ${company_name}`,
+      });
+    }
+
+    // Validate all users exist before starting transaction
+    const users = await db
+      .select()
+      .from(usersTable)
+      .where(
+        and(
+          inArray(usersTable.user_id, user_ids.map(Number)),
+          eq(usersTable.company_id, Number(company_id))
+        )
+      );
+
+    if (users.length !== user_ids.length) {
+      const foundUserIds = users.map((user) => user.user_id);
+      const missingUserIds = user_ids.filter(
+        (id) => !foundUserIds.includes(Number(id))
+      );
+      return res.status(404).json({
+        error: `Users with IDs: ${missingUserIds.join(
+          ", "
+        )} not found in company: ${company_name}`,
+      });
+    }
+
+    // Check for if users are already assigned to the project
+    const existingAssignments = await db
+      .select()
+      .from(projectsUsersTable)
+      .where(
+        and(
+          eq(projectsUsersTable.project_id, Number(project_id)),
+          inArray(projectsUsersTable.user_id, user_ids.map(Number))
+        )
+      );
+
+    if (existingAssignments.length !== user_ids.length) {
+      const foundUserIds = existingAssignments.map((user) => user.user_id);
+      const missingUserIds = user_ids.filter(
+        (id) => !foundUserIds.includes(Number(id))
+      );
+      return res.status(400).json({
+        error: `Users with IDs: ${missingUserIds.join(
+          ", "
+        )} are not assigned to this project name: ${project.project_name}`,
+      });
+    }
+
+    // delete assignments in transaction
+    await db.transaction(async (tx) => {
+      await tx
+        .delete(projectsUsersTable)
+        .where(
+          and(
+            eq(projectsUsersTable.project_id, Number(project_id)),
+            inArray(projectsUsersTable.user_id, user_ids.map(Number))
+          )
+        );
+    });
+
+    return res.status(200).json({
+      message: `Users successfully unassigned from project: ${project.project_name}`,
+    });
 
   } catch (error) {
-    console.error('Error in assignUsersToProject:', error);
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const assignGroupsToProject = async (req: Request, res: Response) => {
+  try {
+    const { project_id } = req.params;
+    const { company_id, company_name } = req.company;
+    const { group_ids } = req.body;
+
+    // Validate project exists
+    const [project] = await db
+      .select()
+      .from(projectsTable)
+      .where(
+        and(
+          eq(projectsTable.project_id, Number(project_id)),
+          eq(projectsTable.company_id, Number(company_id)),
+          eq(projectsTable.project_is_deleted, false)
+        )
+      )
+      .limit(1);
+
+    if (!project) {
+      return res.status(404).json({
+        error: `Project ${project_id} not found for company: ${company_name}`,
+      });
+    }
+
+    // Validate all groups exist before starting transaction
+    const groups = await db
+      .select()
+      .from(groupsTable)
+      .where(
+        and(
+          inArray(groupsTable.group_id, group_ids.map(Number)),
+          eq(groupsTable.company_id, Number(company_id))
+        )
+      );
+
+    if (groups.length !== group_ids.length) {
+      const foundGroupIds = groups.map((group) => group.group_id);
+      const missingGroupIds = group_ids.filter(
+        (id) => !foundGroupIds.includes(Number(id))
+      );
+      return res.status(404).json({
+        error: `Groups with IDs: ${missingGroupIds.join(
+          ", "
+        )} not found in company: ${company_name}`,
+      });
+    }
+
+    // Check for existing assignments
+    const existingAssignments = await db
+      .select()
+      .from(projectsGroupsTable)
+      .where(
+        and(
+          eq(projectsGroupsTable.project_id, Number(project_id)),
+          inArray(projectsGroupsTable.group_id, group_ids.map(Number))
+        )
+      );
+
+    if (existingAssignments.length > 0) {
+      const duplicateGroupIds = existingAssignments.map(
+        (assignment) => assignment.group_id
+      );
+      return res.status(400).json({
+        error: `Groups with IDs: ${duplicateGroupIds.join(
+          ", "
+        )} are already assigned to this project name: ${project.project_name}`,
+      });
+    }
+
+    // Create new assignments in transaction
+    await db.transaction(async (tx) => {
+      const assignments = group_ids.map((group_id) => ({
+        project_id: Number(project_id),
+        group_id: Number(group_id),
+      }));
+
+      await tx.insert(projectsGroupsTable).values(assignments);
+    });
+
+    return res.status(200).json({
+      message: `Groups successfully assigned to project: ${project.project_name}`,
+    });
+  } catch (error) {
+    console.error("Error in assignGroupsToProject:", error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const unassignGroupsFromProject = async (req: Request, res: Response) => {
+  const { project_id } = req.params;
+  const { group_ids } = req.body;
+  const { company_id, company_name } = req.company;
+
+  try {
+    const [project] = await db
+      .select()
+      .from(projectsTable)
+      .where(
+        and(
+          eq(projectsTable.project_id, Number(project_id)),
+          eq(projectsTable.company_id, Number(company_id)),
+          eq(projectsTable.project_is_deleted, false)
+        )
+      )
+      .limit(1);
+
+    if (!project) {
+      return res.status(404).json({
+        error: `Project ${project_id} not found for company: ${company_name}`,
+      });
+    }
+
+    // Validate all groups exist before starting transaction
+    const groups = await db
+      .select()
+      .from(groupsTable)
+      .where(
+        and(
+          inArray(groupsTable.group_id, group_ids.map(Number)),
+          eq(groupsTable.company_id, Number(company_id))
+        )
+      );
+
+    if (groups.length !== group_ids.length) {
+      const foundGroupIds = groups.map((group) => group.group_id);
+      const missingGroupIds = group_ids.filter(
+        (id) => !foundGroupIds.includes(Number(id))
+      );
+      return res.status(404).json({
+        error: `Groups with IDs: ${missingGroupIds.join(
+          ", "
+        )} not found in company: ${company_name}`,
+      });
+    }
+
+    // Check for if users are already assigned to the project
+    const existingAssignments = await db
+      .select()
+      .from(projectsUsersTable)
+      .where(
+        and(
+          eq(projectsGroupsTable.project_id, Number(project_id)),
+          inArray(projectsGroupsTable.group_id, group_ids.map(Number))
+        )
+      );
+
+    if (existingAssignments.length !== group_ids.length) {
+      const foundGroupIds = existingAssignments.map((group) => group.group_id);
+      const missingGroupIds = group_ids.filter(
+        (id) => !foundGroupIds.includes(Number(id))
+      );
+      return res.status(400).json({
+        error: `Groups with IDs: ${missingGroupIds.join(
+          ", "
+        )} are not assigned to this project name: ${project.project_name}`,
+      });
+    }
+
+    // delete assignments in transaction
+    await db.transaction(async (tx) => {
+      await tx
+        .delete(projectsUsersTable)
+        .where(
+          and(
+            eq(projectsGroupsTable.project_id, Number(project_id)),
+            inArray(projectsGroupsTable.group_id, group_ids.map(Number))
+          )
+        );
+    });
+
+    return res.status(200).json({
+      message: `Groups successfully unassigned from project: ${project.project_name}`,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
