@@ -39,6 +39,15 @@ export const createTaskSchema = createInsertSchema(tasksTable).omit({
   task_id: true,
 });
 
+export const updateTaskSchema = createInsertSchema(tasksTable).omit({
+  task_id: true,
+  created_at: true,
+  created_by: true,
+  updated_at: true,
+  updated_by: true,
+  task_is_deleted: true,
+});
+
 export const tasksUsersTable = pgTable("tasks_users", {
   task_id: integer().references(() => tasksTable.task_id),
   user_id: integer().references(() => usersTable.user_id),

@@ -108,5 +108,30 @@ export class TaskController {
       }
     };
   
-   
+    deleteTask = async (req: Request, res: Response) => {
+      try {
+        const { task_id, project_id } = req.params;
+        const { company_id, company_name } = req.company;
+        const { userId } = req;
+        const task = await this.taskService.deleteTask(Number(task_id), Number(project_id), company_id, company_name, userId);
+        res.status(200).json({
+          message: `Task deleted successfully: ${task.task_name}`,
+        });
+      } catch (error) {
+        handleError(error, res);
+      }
+    };    
+
+    updateTask = async (req: Request, res: Response) => {
+    try {
+        const { task_id, project_id } = req.params;
+        const { company_id, company_name } = req.company;
+        const { userId } = req; 
+        const data = req.cleanBody;
+        const task = await this.taskService.updateTask(Number(task_id), Number(project_id), company_id, company_name, data, userId);
+        res.status(200).json(task);
+      } catch (error) {
+        handleError(error, res);
+      }
+    };
   }

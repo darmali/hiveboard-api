@@ -404,7 +404,7 @@ export class TaskService {
       const taskExists = await this.isTaskExists(task_id, project_id);
       if (!taskExists) {
         throw new AppError(
-          `Task ${task_id} not found for project: ${projectExists.project_name}`,
+          `Task ${task_id} not found for project: ${project_id}`,
           404
         );
       }
@@ -464,6 +464,38 @@ export class TaskService {
         });
 
       return tasks;
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError("Internal server error", 500);
+    }
+  }
+
+  async deleteTask(task_id: number, project_id: number, company_id: number, company_name: string, userId: number) {
+    try {
+      const taskExists = await this.isTaskExists(task_id, project_id);
+      if (!taskExists) {
+        throw new AppError(`Task ${task_id} not found for project: ${company_name}`, 404);
+    }
+      const [task] = await db.update(tasksTable).set({task_is_deleted: true, updated_by: userId, updated_at: new Date()}).where(eq(tasksTable.task_id, Number(task_id))).returning();
+      return task;
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError("Internal server error", 500);
+    }
+  } 
+
+  async updateTask(task_id: number, project_id: number, company_id: number, company_name: string, data: any, userId: number) {
+    try {
+      const taskExists = await this.isTaskExists(task_id, project_id);
+      if (!taskExists) {
+        throw new AppError(`Task ${task_id} not found for project: ${project_id}`, 404);
+      }
+      const [task] = await db.update(tasksTable).set({...data, updated_by: userId, updated_at: new Date()}).where(eq(tasksTable.task_id, Number(task_id))).returning();
+      return task;
     } catch (error) {
       if (error instanceof AppError) {
         throw error;
