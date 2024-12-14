@@ -50,6 +50,13 @@
       "when": 1734174804412,
       "tag": "0006_smooth_blue_shield",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1734176478396,
+      "tag": "0007_busy_killmonger",
+      "breakpoints": true
     }
   ]
 }

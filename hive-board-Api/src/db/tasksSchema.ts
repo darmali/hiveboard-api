@@ -1,4 +1,4 @@
-import { boolean, integer, timestamp, varchar, pgEnum, pgTable, customType } from "drizzle-orm/pg-core";
+import { boolean, integer, timestamp, varchar, pgEnum, pgTable, customType, primaryKey } from "drizzle-orm/pg-core";
 import { projectsTable, projectsUsersTable } from "./projectsSchema";
 import { createInsertSchema } from "drizzle-zod";
 import { usersTable } from "./usersSchema";
@@ -42,7 +42,10 @@ export const createTaskSchema = createInsertSchema(tasksTable).omit({
 export const tasksUsersTable = pgTable("tasks_users", {
   task_id: integer().references(() => tasksTable.task_id),
   user_id: integer().references(() => usersTable.user_id),
-});
+}, (table) => ({
+    pk: primaryKey({ columns: [table.task_id, table.user_id] }),
+  })
+);
 
 async function validateTaskAssignment(projectId: number, assigneeId: number) {
   const projectUser = await db

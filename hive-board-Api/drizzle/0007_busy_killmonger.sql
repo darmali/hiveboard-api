@@ -1,0 +1,1 @@
+ALTER TABLE "tasks_users" ADD CONSTRAINT "tasks_users_task_id_user_id_pk" PRIMARY KEY("task_id","user_id");
