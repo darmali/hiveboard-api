@@ -201,7 +201,7 @@ export const updateProject = async (req: Request, res: Response) => {
       )
       .limit(1);
 
-    if (!projectExists.length) {
+    if (projectExists.length === 0) {
       return res.status(404).json({
         error: `Project ${project_id} not found for company: ${company_name}`,
       });
@@ -265,7 +265,7 @@ export const updateProject = async (req: Request, res: Response) => {
         .json({ error: "No valid fields provided for update" });
     }
 
-    const project = await db
+    const [project] = await db
       .update(projectsTable)
       .set(updates)
       .where(
@@ -289,7 +289,7 @@ export const deleteProject = async (req: Request, res: Response) => {
     const { userId } = req;
     const { company_id } = req.company;
 
-    const project = await db
+    const [project] = await db
       .update(projectsTable)
       .set({
         project_is_deleted: true,
@@ -305,8 +305,7 @@ export const deleteProject = async (req: Request, res: Response) => {
       )
       .returning();
 
-    console.log(project);
-    if (project.length === 0) {
+    if (!project) {
       res.status(404).json({ message: "project not found" });
     } else {
       res.status(204).send();

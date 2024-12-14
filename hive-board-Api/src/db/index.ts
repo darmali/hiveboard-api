@@ -6,3 +6,5 @@ const pool = new pg.Pool({
 });
 
 export const db = drizzle(pool);
+
+export const dbQuery = db.query;
