@@ -1,0 +1,1 @@
+ALTER TABLE "project_files" ADD CONSTRAINT "project_files_project_id_file_info_id_pk" PRIMARY KEY("project_id","file_info_id");

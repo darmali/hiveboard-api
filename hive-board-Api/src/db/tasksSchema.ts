@@ -4,6 +4,8 @@ import { createInsertSchema } from "drizzle-zod";
 import { usersTable } from "./usersSchema";
 import { and, eq, isNotNull, relations } from "drizzle-orm";
 import { db } from ".";
+import { fileInfoTable, createFileInfoSchema } from "./projectFilesSechema";
+import { z } from "zod";
 
 export const taskStatusEnum = pgEnum("task_status", [
   "ready",
@@ -12,22 +14,14 @@ export const taskStatusEnum = pgEnum("task_status", [
   "complete",
   "cancelled",
 ]);
-const bytea = customType({
-    dataType: () => {
-        return `bytea`;
-    },
-    toDriver: (value) => value, // Pass the binary data as-is to the database
-    fromDriver: (value) => value, // Receive the binary data as-is from the database
-});
 
 export const tasksTable = pgTable("tasks", {
   task_id: integer().primaryKey().generatedAlwaysAsIdentity(),
   task_name: varchar({ length: 255 }).notNull(),
   project_id: integer().references(() => projectsTable.project_id),
   task_description: varchar({ length: 255 }),
-  file_name: varchar({ length: 255 }),
-  audio_data: bytea(),
   task_status: taskStatusEnum("task_status").notNull().default("ready"),
+  task_file_info_id: integer().references(() => fileInfoTable.file_info_id),
   created_at: timestamp().defaultNow(),
   updated_at: timestamp().defaultNow(),
   created_by: integer().references(() => usersTable.user_id),
@@ -35,18 +29,42 @@ export const tasksTable = pgTable("tasks", {
   task_is_deleted: boolean().default(false),
 });
 
-export const createTaskSchema = createInsertSchema(tasksTable).omit({
-  task_id: true,
-});
+const fileInfoSubSchema = createInsertSchema(fileInfoTable)
+  .omit({
+    file_info_id: true,
+    created_at: true,
+    updated_at: true,
+    created_by: true,
+    updated_by: true,
+    file_info_data: true,
+    file_is_deleted: true,
+  });
 
-export const updateTaskSchema = createInsertSchema(tasksTable).omit({
-  task_id: true,
-  created_at: true,
-  created_by: true,
-  updated_at: true,
-  updated_by: true,
-  task_is_deleted: true,
-});
+export const createTaskSchema = createInsertSchema(tasksTable)
+  .omit({
+    task_id: true,
+    created_at: true,
+    updated_at: true,
+    created_by: true,
+    updated_by: true,
+    task_is_deleted: true,
+  })
+  .extend({
+    file_info: fileInfoSubSchema.optional(),
+  });
+
+export const updateTaskSchema = createInsertSchema(tasksTable)
+  .omit({
+    task_id: true,
+    created_at: true,
+    created_by: true,
+    updated_at: true,
+    updated_by: true,
+    task_is_deleted: true,
+  })
+  .extend({
+    file_info: fileInfoSubSchema.optional(),
+  });
 
 export const tasksUsersTable = pgTable("tasks_users", {
   task_id: integer().references(() => tasksTable.task_id),
@@ -56,20 +74,3 @@ export const tasksUsersTable = pgTable("tasks_users", {
   })
 );
 
-async function validateTaskAssignment(projectId: number, assigneeId: number) {
-  const projectUser = await db
-    .select()
-    .from(projectsUsersTable)
-    .where(
-      and(
-        eq(projectsUsersTable.project_id, projectId),
-        eq(projectsUsersTable.user_id, assigneeId)
-      )
-    );
-
-  if (!projectUser) {
-    throw new Error(
-      "User must be a member of the project to be assigned tasks"
-    );
-  }
-}

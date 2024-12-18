@@ -1,4 +1,4 @@
-import { db } from "../db/index.js";
+import { db, query } from "../db/index.js";
 import { tasksUsersTable } from "../db/tasksSchema.js";
 import { projectsTable } from "../db/projectsSchema.js";
 import { tasksTable } from "../db/tasksSchema.js";
@@ -8,6 +8,7 @@ import { AppError } from "../utils/errors.js";
 import { inArray } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 import { eq, and } from "drizzle-orm";
+import { fileInfoTable, createFileInfoSchema } from "../db/projectFilesSechema.js";
 
 // services/taskService.ts
 export class TaskService {
@@ -86,7 +87,6 @@ export class TaskService {
   ) {
     const offset = (page - 1) * pageSize;
     const projectExists = await this.validateProject(project_id, company_id);
-
     const [{ count }] = await db
       .select({ count: sql`count(*)`.mapWith(Number) })
       .from(tasksTable)
@@ -103,8 +103,6 @@ export class TaskService {
           task_id: tasksTable.task_id,
           task_name: tasksTable.task_name,
           task_description: tasksTable.task_description,
-          file_name: tasksTable.file_name,
-          audio_data: tasksTable.audio_data,
           task_status: tasksTable.task_status,
           task_created_at: tasksTable.created_at,
           task_updated_at: tasksTable.updated_at,
@@ -373,6 +371,12 @@ export class TaskService {
       data.updated_by = userId;
 
       const projectExists = await this.validateProject(project_id, company_id);
+      
+      if (data.file_info) {
+        const [fileInfo] = await db.insert(fileInfoTable).values(data.file_info).returning();
+        data = { ...data, task_file_info_id: fileInfo.file_info_id };
+        
+      }
 
       const [task] = await db.insert(tasksTable).values(data).returning();
 
@@ -380,8 +384,6 @@ export class TaskService {
         "task_id",
         "project_id",
         "task_name",
-        "file_name",
-        "audio_data",
         "task_description",
         "task_status",
       ]);
@@ -414,8 +416,6 @@ export class TaskService {
             task_id: tasksTable.task_id,
             task_name: tasksTable.task_name,
             task_description: tasksTable.task_description,
-            file_name: tasksTable.file_name,
-            audio_data: tasksTable.audio_data,
             task_status: tasksTable.task_status,
             task_created_at: tasksTable.created_at,
             task_updated_at: tasksTable.updated_at,
@@ -426,7 +426,7 @@ export class TaskService {
             user_last_name: usersTable.last_name,
             user_email: usersTable.email,
             user_role: usersTable.role,
-          },
+          }
         })
         .from(tasksTable)
         .leftJoin(
@@ -494,6 +494,13 @@ export class TaskService {
       if (!taskExists) {
         throw new AppError(`Task ${task_id} not found for project: ${project_id}`, 404);
       }
+
+      if (data.file_info) {
+        const cleanData = validateObject(createFileInfoSchema, data.file_info);
+        const [fileInfo] = await db.insert(fileInfoTable).values({...cleanData}).returning();
+        data = { ...data, task_file_info_id: fileInfo.file_info_id };
+      }
+
       const [task] = await db.update(tasksTable).set({...data, updated_by: userId, updated_at: new Date()}).where(eq(tasksTable.task_id, Number(task_id))).returning();
       return task;
     } catch (error) {

@@ -10,6 +10,7 @@ export default defineConfig({
     './src/db/occupationsSchema.ts',
     './src/db/projectsSchema.ts',
     './src/db/groupsSchema.ts',
+    './src/db/projectFilesSechema.ts',
   ],
   dialect: "postgresql",
   dbCredentials: {
