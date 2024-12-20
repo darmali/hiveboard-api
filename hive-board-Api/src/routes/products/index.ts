@@ -1,11 +1,6 @@
 import { Router } from "express";
-import {
-  createProduct,
-  deleteProduct,
-  getProductById,
-  listProducts,
-  updateProduct,
-} from "./productController.js";
+import { ProductController } from "./productController.js";
+import { ProductService } from "../../services/productService.js";
 import { validateData } from "../../middlewares/validationMiddleware.js";
 import { z } from "zod";
 import {
@@ -21,18 +16,21 @@ import { verifyToken, verifySeller } from "../../middlewares/authMiddleware.js";
 //   }
 // );
 
+const productService = new ProductService();
+const productController = new ProductController(productService);
+
 const productsRouter = Router();
 
-productsRouter.get("/", listProducts);
+productsRouter.get("/", productController.listProducts);
 
-productsRouter.get("/:id", getProductById);
+productsRouter.get("/:id", productController.getProductById);
 
 productsRouter.post(
   "/",
   verifyToken,
   verifySeller,
   validateData(createProductSchema),
-  createProduct
+  productController.createProduct
 );
 
 productsRouter.put(
@@ -40,9 +38,9 @@ productsRouter.put(
   verifyToken,
   verifySeller,
   validateData(updateProductSchema),
-  updateProduct
+  productController.updateProduct
 );
 
-productsRouter.delete("/:id", verifyToken, verifySeller, deleteProduct);
+productsRouter.delete("/:id", verifyToken, verifySeller, productController.deleteProduct);
 
 export default productsRouter;

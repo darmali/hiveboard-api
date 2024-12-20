@@ -363,7 +363,8 @@ export class TaskService {
     company_id: number,
     data: any,
     userId: number,
-    company_name: string
+    company_name: string,
+    file: any
   ) {
     try {
       data.project_id = Number(project_id);
@@ -372,8 +373,18 @@ export class TaskService {
 
       const projectExists = await this.validateProject(project_id, company_id);
       
-      if (data.file_info) {
-        const [fileInfo] = await db.insert(fileInfoTable).values(data.file_info).returning();
+      if (file) {
+        const [fileInfo] = await db.insert(fileInfoTable).values({
+          file_info_name: file.filename,
+          file_info_data: file.buffer,
+          file_info_size: file.size,
+          file_info_type: "audio",
+          created_at: new Date(),
+          updated_at: new Date(),
+          created_by: userId,
+          updated_by: userId,
+        }).returning();
+
         data = { ...data, task_file_info_id: fileInfo.file_info_id };
         
       }
@@ -396,6 +407,7 @@ export class TaskService {
       throw new AppError("Internal server error", 500);
     }
   }
+
   async getTask(
     task_id: number,
     project_id: number,
@@ -426,6 +438,13 @@ export class TaskService {
             user_last_name: usersTable.last_name,
             user_email: usersTable.email,
             user_role: usersTable.role,
+          },
+          file_info: {
+            file_info_id: fileInfoTable.file_info_id,
+            file_info_name: fileInfoTable.file_info_name,
+            file_info_size: fileInfoTable.file_info_size,
+            file_info_type: fileInfoTable.file_info_type,
+            file_info_data: fileInfoTable.file_info_data,
           }
         })
         .from(tasksTable)
@@ -434,6 +453,7 @@ export class TaskService {
           eq(tasksTable.task_id, tasksUsersTable.task_id)
         )
         .leftJoin(usersTable, eq(tasksUsersTable.user_id, usersTable.user_id))
+        .leftJoin(fileInfoTable, eq(tasksTable.task_file_info_id, fileInfoTable.file_info_id))
         .where(
           and(
             eq(tasksTable.project_id, Number(project_id)),
@@ -451,6 +471,16 @@ export class TaskService {
               acc[taskId] = {
                 ...curr.tasks,
                 users: [],
+                file: curr.file_info ? {
+                  id: curr.file_info.file_info_id,
+                  name: curr.file_info.file_info_name,
+                  size: curr.file_info.file_info_size,
+                  type: curr.file_info.file_info_type,
+                  data: curr.file_info.file_info_data ? {
+                    type: this.getFileType(curr.file_info.file_info_name),
+                    buffer: curr.file_info.file_info_data
+                  } : null
+                } : null
               };
             }
             if (curr.users && curr.users.user_id) {
@@ -459,17 +489,38 @@ export class TaskService {
             return acc;
           }, {});
 
-          // Convert map to array
           return Object.values(taskMap);
         });
 
       return tasks;
     } catch (error) {
+      console.log(error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError("Internal server error", 500);
     }
+  }
+
+  private getFileType(filename: string): string {
+    const extension = filename.split('.').pop()?.toLowerCase();
+    const mimeTypes = {
+      'pdf': 'application/pdf',
+      'doc': 'application/msword',
+      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'xls': 'application/vnd.ms-excel',
+      'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'png': 'image/png',
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'gif': 'image/gif',
+      'mp3': 'audio/mpeg',
+      'wav': 'audio/wav',
+      'mp4': 'video/mp4',
+      'txt': 'text/plain'
+    };
+    
+    return mimeTypes[extension] || 'application/octet-stream';
   }
 
   async deleteTask(task_id: number, project_id: number, company_id: number, company_name: string, userId: number) {
@@ -488,22 +539,42 @@ export class TaskService {
     }
   } 
 
-  async updateTask(task_id: number, project_id: number, company_id: number, company_name: string, data: any, userId: number) {
+  async updateTask(task_id: number, project_id: number, company_id: number, company_name: string, data: any, userId: number, file: any) {
     try {
       const taskExists = await this.isTaskExists(task_id, project_id);
       if (!taskExists) {
         throw new AppError(`Task ${task_id} not found for project: ${project_id}`, 404);
       }
-
-      if (data.file_info) {
-        const cleanData = validateObject(createFileInfoSchema, data.file_info);
-        const [fileInfo] = await db.insert(fileInfoTable).values({...cleanData}).returning();
+      
+      if (file && taskExists.task_file_info_id) {
+        const [fileInfo] = await db.update(fileInfoTable).set({
+          file_info_name: file.filename,
+          file_info_data: file.buffer,
+          file_info_size: file.size,
+          file_info_type: "audio",
+          updated_at: new Date(),
+          updated_by: userId,
+        }).where(eq(fileInfoTable.file_info_id, Number(taskExists.task_file_info_id))).returning();
+        data = { ...data, task_file_info_id: fileInfo.file_info_id };
+      }
+      else if (file && !taskExists.task_file_info_id) {
+        const [fileInfo] = await db.insert(fileInfoTable).values({
+          file_info_name: file.filename,
+          file_info_data: file.buffer,
+          file_info_size: file.size,
+          file_info_type: "audio",
+          created_at: new Date(),
+          updated_at: new Date(),
+          created_by: userId,
+          updated_by: userId,
+        }).returning();
         data = { ...data, task_file_info_id: fileInfo.file_info_id };
       }
 
       const [task] = await db.update(tasksTable).set({...data, updated_by: userId, updated_at: new Date()}).where(eq(tasksTable.task_id, Number(task_id))).returning();
       return task;
     } catch (error) {
+      console.log(error);
       if (error instanceof AppError) {
         throw error;
       }

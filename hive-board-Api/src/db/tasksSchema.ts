@@ -48,9 +48,6 @@ export const createTaskSchema = createInsertSchema(tasksTable)
     created_by: true,
     updated_by: true,
     task_is_deleted: true,
-  })
-  .extend({
-    file_info: fileInfoSubSchema.optional(),
   });
 
 export const updateTaskSchema = createInsertSchema(tasksTable)
