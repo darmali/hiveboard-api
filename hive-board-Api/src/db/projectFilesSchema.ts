@@ -20,7 +20,7 @@ export const fileInfoTypeEnum = pgEnum('file_info_type', [
   "other",
 ]);
 
-const bytea = customType({
+export const bytea = customType({
   dataType: () => {
       return `bytea`;
   },
@@ -45,11 +45,11 @@ export const fileInfoTable = pgTable("file_info", {
 
 export const createFileInfoSchema = createInsertSchema(fileInfoTable).omit({
     file_info_id: true,
-    created_at: true,
-    updated_at: true,
-    created_by: true,
-    updated_by: true,
-    file_is_deleted: true,
+    file_info_created_at: true,
+    file_info_updated_at: true,
+    file_info_created_by: true,
+    file_info_updated_by: true,
+    file_info_is_deleted: true,
 });
 
 export const updateFileInfoSchema = createFileInfoSchema.partial();

@@ -13,7 +13,7 @@ export const attendanceStatusEnum = pgEnum('attendance_status', [
   'auto_resolved',
 ]);
 
-export const AttendancesTable = pgTable("attendances", {
+export const attendancesTable = pgTable("attendances", {
   attendance_id: integer().primaryKey().generatedAlwaysAsIdentity(),
   attendance_user_id: integer().references(() => usersTable.user_id),
   attendance_shift_id: integer().references(() => shiftsTable.shift_id),
@@ -31,7 +31,7 @@ export const AttendancesTable = pgTable("attendances", {
   attendance_is_deleted: boolean().default(false),
 });
 
-export const insertAttendanceSchema = createInsertSchema(AttendancesTable)
+export const insertAttendanceSchema = createInsertSchema(attendancesTable)
   .omit({
     attendance_id: true,
     attendance_created_at: true,

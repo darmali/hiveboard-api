@@ -8,7 +8,7 @@ import { AppError } from "../utils/errors.js";
 import { inArray } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 import { eq, and } from "drizzle-orm";
-import { fileInfoTable, createFileInfoSchema } from "../db/projectFilesSechema.js";
+import { fileInfoTable, createFileInfoSchema } from "../db/projectFilesSchema.js";
 
 // services/taskService.ts
 export class TaskService {

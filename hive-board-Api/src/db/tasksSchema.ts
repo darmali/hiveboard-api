@@ -4,7 +4,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { usersTable } from "./usersSchema";
 import { and, eq, isNotNull, relations } from "drizzle-orm";
 import { db } from ".";
-import { fileInfoTable, createFileInfoSchema } from "./projectFilesSechema";
+import { fileInfoTable, createFileInfoSchema } from "./projectFilesSchema";
 import { z } from "zod";
 
 export const taskStatusEnum = pgEnum("task_status", [
@@ -43,20 +43,20 @@ const fileInfoSubSchema = createInsertSchema(fileInfoTable)
 export const createTaskSchema = createInsertSchema(tasksTable)
   .omit({
     task_id: true,
-    created_at: true,
-    updated_at: true,
-    created_by: true,
-    updated_by: true,
+    task_created_at: true,
+    task_updated_at: true,
+    task_created_by: true,
+    task_updated_by: true,
     task_is_deleted: true,
   });
 
 export const updateTaskSchema = createInsertSchema(tasksTable)
   .omit({
     task_id: true,
-    created_at: true,
-    created_by: true,
-    updated_at: true,
-    updated_by: true,
+    task_created_at: true,
+    task_created_by: true,
+    task_updated_at: true,
+    task_updated_by: true,
     task_is_deleted: true,
   })
   .extend({

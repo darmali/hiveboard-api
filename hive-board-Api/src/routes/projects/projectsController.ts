@@ -8,8 +8,8 @@ import { groupsTable } from "../../db/groupsSchema.js";
 // Types
 interface ProjectData {
   project_name?: string;
-  latitude?: number;
-  longitude?: number;
+  project_latitude?: number;
+  project_longitude?: number;
   project_description?: string;
   project_status?: string;
 }
@@ -31,7 +31,7 @@ const findProjectByName = async (
     .from(projectsTable)
     .where(
       and(
-        eq(projectsTable.company_id, Number(companyId)),
+        eq(projectsTable.project_company_id, Number(companyId)),
         eq(projectsTable.project_name, projectName)
       )
     );
@@ -40,7 +40,7 @@ const findProjectByName = async (
     query = query.where(
       and(
         not(eq(projectsTable.project_id, Number(excludeProjectId))),
-        eq(projectsTable.company_id, Number(companyId)),
+        eq(projectsTable.project_company_id, Number(companyId)),
         eq(projectsTable.project_name, projectName)
       )
     );
@@ -59,9 +59,9 @@ const findProjectByLocation = async (
     .from(projectsTable)
     .where(
       and(
-        eq(projectsTable.company_id, Number(companyId)),
-        eq(projectsTable.latitude, lat),
-        eq(projectsTable.longitude, lng)
+        eq(projectsTable.project_company_id, Number(companyId)),
+        eq(projectsTable.project_latitude, lat),
+        eq(projectsTable.project_longitude, lng)
       )
     );
 
@@ -69,9 +69,9 @@ const findProjectByLocation = async (
     query = query.where(
       and(
         not(eq(projectsTable.project_id, Number(excludeProjectId))),
-        eq(projectsTable.company_id, Number(companyId)),
-        eq(projectsTable.latitude, lat),
-        eq(projectsTable.longitude, lng)
+        eq(projectsTable.project_company_id, Number(companyId)),
+        eq(projectsTable.project_latitude, lat),
+        eq(projectsTable.project_longitude, lng)
       )
     );
   }

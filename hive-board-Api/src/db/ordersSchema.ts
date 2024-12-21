@@ -16,7 +16,7 @@ export const ordersTable = pgTable('orders', {
   status: varchar({ length: 50 }).notNull().default('New'),
 
   userId: integer()
-    .references(() => usersTable.id)
+    .references(() => usersTable.user_id)
     .notNull(),
 
   stripePaymentIntentId: varchar({ length: 255 }),

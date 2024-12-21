@@ -10,9 +10,9 @@ export const createGroup = async (req: Request, res: Response) => {
     const { company_id, company_name } = req.company;
     const createData: GroupData = req.cleanBody;
 
-    createData.created_by = userId;
-    createData.updated_by = userId;
-    createData.company_id = company_id;
+    createData.group_created_by = userId;
+    createData.group_updated_by = userId;
+    createData.group_company_id = company_id;
 
     const existingGroup = await db
       .select()
@@ -21,7 +21,7 @@ export const createGroup = async (req: Request, res: Response) => {
         and(
           eq(groupsTable.group_name, createData.group_name),
           eq(groupsTable.group_is_deleted, false),
-          eq(groupsTable.company_id, company_id)
+          eq(groupsTable.group_company_id, company_id)
         )
       ).limit(1);
 
@@ -47,15 +47,15 @@ export const updateGroup = async (req: Request, res: Response) => {
     const { userId } = req;
     const { group_id } = req.params;
     const updateData: GroupData = req.cleanBody;
-    updateData.updated_by = userId;
-    updateData.updated_at = new Date();
+    updateData.group_updated_by = userId;
+    updateData.group_updated_at = new Date();
 
     const existingGroup = await db
       .select()
       .from(groupsTable)
       .where(
         and(
-          eq(groupsTable.group_id, group_id),
+          eq(groupsTable.group_id, Number(group_id)),
           eq(groupsTable.group_is_deleted, false)
         )
       );
@@ -67,7 +67,7 @@ export const updateGroup = async (req: Request, res: Response) => {
     const [updatedGroup] = await db
       .update(groupsTable)
       .set(updateData)
-      .where(eq(groupsTable.group_id, group_id))
+      .where(eq(groupsTable.group_id, Number(group_id)))
       .returning();
     const safeGroup = sanitizeData(updatedGroup, ['group_id', 'group_name', 'group_description']);
     res.status(200).json(safeGroup);
@@ -82,15 +82,15 @@ export const deleteGroup = async (req: Request, res: Response) => {
     const { group_id } = req.params;
     const deleteData: GroupData = {};
 
-    deleteData.updated_by = userId;
-    deleteData.updated_at = new Date();
+    deleteData.group_updated_by = userId;
+    deleteData.group_updated_at = new Date();
     deleteData.group_is_deleted = true;
 
     const [deletedGroup] = await db
       .update(groupsTable)
       .set(deleteData)
       .where(and(
-        eq(groupsTable.group_id, group_id),
+        eq(groupsTable.group_id, Number(group_id)),
         eq(groupsTable.group_is_deleted, false)
       ))
       .returning();
@@ -112,7 +112,7 @@ export const getGroups = async (req: Request, res: Response) => {
       .from(groupsTable)
       .where(
         and(
-          eq(groupsTable.company_id, company_id),
+          eq(groupsTable.group_company_id, Number(company_id)),
           eq(groupsTable.group_is_deleted, false)
         )
       );
@@ -132,7 +132,7 @@ export const getGroup = async (req: Request, res: Response) => {
       .from(groupsTable)
       .where(
         and(
-          eq(groupsTable.group_id, group_id),
+          eq(groupsTable.group_id, Number(group_id)),
           eq(groupsTable.group_is_deleted, false)
         )
       );
@@ -159,7 +159,7 @@ export const assignUsersToGroup = async (req: Request, res: Response) => {
         .where(
           and(
             eq(groupsTable.group_id, Number(group_id)),
-            eq(groupsTable.company_id, Number(company_id)),
+            eq(groupsTable.group_company_id, Number(company_id)),
             eq(groupsTable.group_is_deleted, false)
           )
         )
@@ -178,7 +178,7 @@ export const assignUsersToGroup = async (req: Request, res: Response) => {
         .where(
           and(
             inArray(usersTable.user_id, user_ids.map(Number)),
-            eq(usersTable.company_id, Number(company_id))
+            eq(usersTable.user_company_id, Number(company_id))
           )
         );
   
@@ -248,7 +248,7 @@ export const unassignUsersFromGroup = async (req: Request, res: Response) => {
         .where(
           and(
             eq(groupsTable.group_id, Number(group_id)),
-            eq(groupsTable.company_id, Number(company_id)),
+            eq(groupsTable.group_company_id, Number(company_id)),
             eq(groupsTable.group_is_deleted, false)
           )
         )
@@ -267,7 +267,7 @@ export const unassignUsersFromGroup = async (req: Request, res: Response) => {
         .where(
           and(
             inArray(usersTable.user_id, user_ids.map(Number)),
-            eq(usersTable.company_id, Number(company_id))
+            eq(usersTable.user_company_id, Number(company_id))
           )
         );
   

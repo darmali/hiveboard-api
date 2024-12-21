@@ -100,7 +100,10 @@ export const loginUser = async (req: Request, res: Response) => {
     const { email, password } = req.cleanBody;
 
     const [users] = await db
-      .select()
+      .select({
+        user: usersTable,
+        company: companiesTable,
+      })
       .from(usersTable)
       .innerJoin(
         companiesTable,
@@ -117,7 +120,7 @@ export const loginUser = async (req: Request, res: Response) => {
       res.status(401).json({ error: "Authentication failed" });
       return;
     }
-    const user = { ...users.users, company: users.companies };
+    const user = { ...users.user, company: users.company };
     //@ts-ignore
     const matched = await bcrypt.compare(password, user.user_password);
     if (!matched) {

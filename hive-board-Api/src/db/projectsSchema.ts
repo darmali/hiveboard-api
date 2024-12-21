@@ -24,6 +24,7 @@ export const projectStatusEnum = pgEnum("project_status", [
   "paid",
 ]);
 
+
 export const projectsTable = pgTable(
   "projects",
   {
@@ -33,7 +34,7 @@ export const projectsTable = pgTable(
     project_longitude: doublePrecision(),
     project_address: varchar({ length: 255 }),
     project_description: varchar({ length: 255 }),
-    company_id: integer().references(() => companiesTable.company_id),
+    project_company_id: integer().references(() => companiesTable.company_id),
     project_status: projectStatusEnum("project_status").array(),
     project_radius: integer().default(100),
     project_created_at: timestamp().defaultNow(),
@@ -46,7 +47,7 @@ export const projectsTable = pgTable(
     return {
       projectNameCompanyUnique: unique().on(
         table.project_name,
-        table.company_id
+        table.project_company_id
       ),
     };
   }
@@ -72,20 +73,20 @@ export const projectsGroupsTable = pgTable("projects_groups", {
 }));
 export const createProjectSchema = createInsertSchema(projectsTable).omit({
   project_id: true,
-  created_at: true,
-  updated_at: true,
-  created_by: true,
-  updated_by: true,
-  company_id: true,
+  project_created_at: true,
+  project_updated_at: true,
+  project_created_by: true,
+  project_updated_by: true,
+  project_company_id: true,
   project_is_deleted: true,
 });
 
 export const updateProjectSchema = createInsertSchema(projectsTable).omit({
   project_id: true,
-  created_at: true,
-  updated_at: true,
-  created_by: true,
-  updated_by: true,
-  company_id: true,
+  project_created_at: true,
+  project_updated_at: true,
+  project_created_by: true,
+  project_updated_by: true,
+  project_company_id: true,
   project_is_deleted: true,
 });
