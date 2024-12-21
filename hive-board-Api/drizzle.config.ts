@@ -11,6 +11,9 @@ export default defineConfig({
     './src/db/projectsSchema.ts',
     './src/db/groupsSchema.ts',
     './src/db/projectFilesSechema.ts',
+    './src/db/attendancesSchema.ts',
+    './src/db/exceptionsSchema.ts',
+    './src/db/shiftsSchema.ts',
   ],
   dialect: "postgresql",
   dbCredentials: {

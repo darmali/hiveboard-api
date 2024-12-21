@@ -36,11 +36,11 @@ export const fileInfoTable = pgTable("file_info", {
   file_info_path: varchar({ length: 255 }), //TODO: add s3 path
   file_info_size: integer(),
   file_info_data: bytea().notNull(),
-  created_at: timestamp().defaultNow(),
-  updated_at: timestamp().defaultNow(),
-  created_by: integer().references(() => usersTable.user_id),
-  updated_by: integer().references(() => usersTable.user_id),
-  file_is_deleted: boolean().default(false),
+  file_info_created_at: timestamp().defaultNow(),
+  file_info_updated_at: timestamp().defaultNow(),
+  file_info_created_by: integer().references(() => usersTable.user_id),
+  file_info_updated_by: integer().references(() => usersTable.user_id),
+  file_info_is_deleted: boolean().default(false),
 });
 
 export const createFileInfoSchema = createInsertSchema(fileInfoTable).omit({

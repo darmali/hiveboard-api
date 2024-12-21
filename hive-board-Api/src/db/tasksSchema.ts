@@ -18,26 +18,26 @@ export const taskStatusEnum = pgEnum("task_status", [
 export const tasksTable = pgTable("tasks", {
   task_id: integer().primaryKey().generatedAlwaysAsIdentity(),
   task_name: varchar({ length: 255 }).notNull(),
-  project_id: integer().references(() => projectsTable.project_id),
+  task_project_id: integer().references(() => projectsTable.project_id),
   task_description: varchar({ length: 255 }),
   task_status: taskStatusEnum("task_status").notNull().default("ready"),
   task_file_info_id: integer().references(() => fileInfoTable.file_info_id),
-  created_at: timestamp().defaultNow(),
-  updated_at: timestamp().defaultNow(),
-  created_by: integer().references(() => usersTable.user_id),
-  updated_by: integer().references(() => usersTable.user_id),
+  task_created_at: timestamp().defaultNow(),
+  task_updated_at: timestamp().defaultNow(),
+  task_created_by: integer().references(() => usersTable.user_id),
+  task_updated_by: integer().references(() => usersTable.user_id),
   task_is_deleted: boolean().default(false),
 });
 
 const fileInfoSubSchema = createInsertSchema(fileInfoTable)
   .omit({
     file_info_id: true,
-    created_at: true,
-    updated_at: true,
-    created_by: true,
-    updated_by: true,
+    file_info_created_at: true,
+    file_info_updated_at: true,
+    file_info_created_by: true,
+    file_info_updated_by: true,
     file_info_data: true,
-    file_is_deleted: true,
+    file_info_is_deleted: true,
   });
 
 export const createTaskSchema = createInsertSchema(tasksTable)

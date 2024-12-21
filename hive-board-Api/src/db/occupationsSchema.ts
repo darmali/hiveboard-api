@@ -1,14 +1,19 @@
 import { pgTable } from "drizzle-orm/pg-core";
 import { boolean, integer, varchar } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 export const occupationsTable = pgTable('occupations', {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  ar_name: varchar({ length: 255 }).notNull(),
-  en_name: varchar({ length: 255 }).notNull(),
+  occupation_id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  occupation_ar_name: varchar({ length: 255 }).notNull(),
+  occupation_en_name: varchar({ length: 255 }).notNull(),
   occupation_is_deleted: boolean().default(false)
 });
 
 export const createOccupationSchema = createInsertSchema(occupationsTable).omit({
-  id: true,
+  occupation_id: true,
+  occupation_is_deleted: true,
+});
+
+export const selectOccupationSchema = createSelectSchema(occupationsTable).omit({
+  occupation_is_deleted: true,
 });

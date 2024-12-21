@@ -11,11 +11,11 @@ const generateUserToken = (user: any) => {
   return jwt.sign(
     {
       userId: user.user_id,
-      role: user.role,
-      email: user.email,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      phone: user.phone,
+      role: user.user_role,
+      email: user.user_email,
+      firstName: user.user_first_name,
+      lastName: user.user_last_name,
+      phone: user.user_phone,
       company: user.company,
     },
     "your-secret",
@@ -29,7 +29,7 @@ export const getUsers = async (req: Request, res: Response) => {
   const users = await db
     .select()
     .from(usersTable)
-    .where(not(eq(usersTable.status, "deleted")));
+    .where(not(eq(usersTable.user_is_deleted, true)));
   res.json(users);
 };
 
@@ -38,7 +38,7 @@ export const getUserById = async (req: Request, res: Response) => {
   const user = await db
     .select()
     .from(usersTable)
-    .where(eq(usersTable.user_id, id));
+    .where(eq(usersTable.user_id, Number(id)));
   res.json(user);
 };
 
@@ -56,7 +56,7 @@ export const registerUser = async (req: Request, res: Response) => {
     const existingUser = await db
       .select()
       .from(usersTable)
-      .where(eq(usersTable.email, data.email))
+      .where(eq(usersTable.user_email, data.user_email))
       .limit(1);
     if (existingUser.length > 0) {
       return res.status(400).json({ error: "Email already registered" });
@@ -72,7 +72,7 @@ export const registerUser = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Company name already registered" });
     }
 
-    data.password = await bcrypt.hash(data.password, 10);
+    data.user_password = await bcrypt.hash(data.user_password, 10);
     const [company] = await db
       .insert(companiesTable)
       .values({
@@ -82,7 +82,7 @@ export const registerUser = async (req: Request, res: Response) => {
       })
       .returning();
 
-    data.company_id = company.company_id;
+    data.user_company_id = company.company_id;
     const [user] = await db.insert(usersTable).values(data).returning();
 
     // @ts-ignore
@@ -104,12 +104,13 @@ export const loginUser = async (req: Request, res: Response) => {
       .from(usersTable)
       .innerJoin(
         companiesTable,
-        eq(usersTable.company_id, companiesTable.company_id)
+        eq(usersTable.user_company_id, companiesTable.company_id)
       )
       .where(
         and(
-          eq(usersTable.email, email),
-          inArray(usersTable.status, ["active", "pending"])
+          eq(usersTable.user_email, email),
+          inArray(usersTable.user_status, ["active", "pending"]),
+          not(eq(usersTable.user_is_deleted, true))
         )
       );
     if (!users) {
@@ -118,17 +119,17 @@ export const loginUser = async (req: Request, res: Response) => {
     }
     const user = { ...users.users, company: users.companies };
     //@ts-ignore
-    const matched = await bcrypt.compare(password, user.password);
+    const matched = await bcrypt.compare(password, user.user_password);
     if (!matched) {
       res.status(401).json({ error: "Authentication failed" });
       return;
     }
 
     //@ts-ignore
-    if (user.status === "pending") {
+    if (user.user_status === "pending") {
       await db
         .update(usersTable)
-        .set({ status: "active" })
+        .set({ user_status: "active" })
         //@ts-ignore
         .where(eq(usersTable.user_id, user.user_id));
     }
@@ -138,11 +139,11 @@ export const loginUser = async (req: Request, res: Response) => {
 
     const safeUser = sanitizeData(user, [
       "user_id",
-      "email",
-      "first_name",
-      "last_name",
-      "role",
-      "phone",
+      "user_email",
+      "user_first_name",
+      "user_last_name",
+      "user_role",
+      "user_phone",
       "company",
     ]);
 
@@ -159,15 +160,15 @@ export const updateUser = async (req: Request, res: Response) => {
   const updatedUser = await db
     .update(usersTable)
     .set(user)
-    .where(eq(usersTable.user_id, id));
+    .where(eq(usersTable.user_id, Number(id)));
   res.json(updatedUser);
 };
 export const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;
   const updatedUser = await db
     .update(usersTable)
-    .set({ status: "deleted" })
-    .where(eq(usersTable.user_id, id))
+    .set({ user_is_deleted: true })
+    .where(eq(usersTable.user_id, Number(id)))
     .returning();
   res.json({ message: "User deleted", user: updatedUser });
 };

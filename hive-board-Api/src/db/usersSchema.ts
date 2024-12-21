@@ -25,16 +25,16 @@ export const userStatusEnum = pgEnum("user_status", [
 
 export const usersTable = pgTable("users", {
   user_id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  first_name: varchar({ length: 255 }).notNull(),
-  last_name: varchar({ length: 255 }).notNull(),
-  phone: varchar({ length: 255 }).notNull(),
-  occupation_id: integer().references(() => occupationsTable.id),
-  email: varchar({ length: 255 }).notNull().unique(),
-  password: varchar({ length: 255 }).notNull(),
-  role: userRoleEnum("user_role").notNull().default("company_admin"),
-  type: userTypeEnum("user_type").notNull().default("registered_user"),
-  company_id: integer().references(() => companiesTable.company_id),
-  status: userStatusEnum("user_status").notNull().default("pending"),
+  user_first_name: varchar({ length: 255 }).notNull(),
+  user_last_name: varchar({ length: 255 }).notNull(),
+  user_phone: varchar({ length: 255 }).notNull(),
+  user_occupation_id: integer().references(() => occupationsTable.occupation_id),
+  user_email: varchar({ length: 255 }).notNull().unique(),
+  user_password: varchar({ length: 255 }).notNull(),
+  user_role: userRoleEnum("user_role").notNull().default("company_admin"),
+  user_type: userTypeEnum("user_type").notNull().default("registered_user"),
+  user_company_id: integer().references(() => companiesTable.company_id),
+  user_status: userStatusEnum("user_status").notNull().default("pending"),
   user_is_deleted: boolean().default(false),
 });
 

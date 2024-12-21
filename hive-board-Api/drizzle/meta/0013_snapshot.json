@@ -1,0 +1,1874 @@
+{
+  "id": "73af0912-93de-4b2a-ab9b-0f35a3466ec0",
+  "prevId": "8ea7c498-d0da-42d8-9897-75d8a62e5298",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.companies": {
+      "name": "companies",
+      "schema": "",
+      "columns": {
+        "company_id": {
+          "name": "company_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "companies_company_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "company_name": {
+          "name": "company_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "company_size": {
+          "name": "company_size",
+          "type": "company_size",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "company_is_deleted": {
+          "name": "company_is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "companies_company_name_unique": {
+          "name": "companies_company_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "company_name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users_groups": {
+      "name": "users_groups",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group_id": {
+          "name": "group_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "users_groups_user_id_users_user_id_fk": {
+          "name": "users_groups_user_id_users_user_id_fk",
+          "tableFrom": "users_groups",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "users_groups_group_id_groups_group_id_fk": {
+          "name": "users_groups_group_id_groups_group_id_fk",
+          "tableFrom": "users_groups",
+          "tableTo": "groups",
+          "columnsFrom": [
+            "group_id"
+          ],
+          "columnsTo": [
+            "group_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "users_groups_user_id_group_id_pk": {
+          "name": "users_groups_user_id_group_id_pk",
+          "columns": [
+            "user_id",
+            "group_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "users_user_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "user_first_name": {
+          "name": "user_first_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_last_name": {
+          "name": "user_last_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_phone": {
+          "name": "user_phone",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_occupation_id": {
+          "name": "user_occupation_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_email": {
+          "name": "user_email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_password": {
+          "name": "user_password",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_role": {
+          "name": "user_role",
+          "type": "user_role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'company_admin'"
+        },
+        "user_type": {
+          "name": "user_type",
+          "type": "user_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'registered_user'"
+        },
+        "user_company_id": {
+          "name": "user_company_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_status": {
+          "name": "user_status",
+          "type": "user_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "user_is_deleted": {
+          "name": "user_is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "users_user_occupation_id_occupations_occupation_id_fk": {
+          "name": "users_user_occupation_id_occupations_occupation_id_fk",
+          "tableFrom": "users",
+          "tableTo": "occupations",
+          "columnsFrom": [
+            "user_occupation_id"
+          ],
+          "columnsTo": [
+            "occupation_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "users_user_company_id_companies_company_id_fk": {
+          "name": "users_user_company_id_companies_company_id_fk",
+          "tableFrom": "users",
+          "tableTo": "companies",
+          "columnsFrom": [
+            "user_company_id"
+          ],
+          "columnsTo": [
+            "company_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_user_email_unique": {
+          "name": "users_user_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tasks": {
+      "name": "tasks",
+      "schema": "",
+      "columns": {
+        "task_id": {
+          "name": "task_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "tasks_task_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "task_name": {
+          "name": "task_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "task_project_id": {
+          "name": "task_project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "task_description": {
+          "name": "task_description",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "task_status": {
+          "name": "task_status",
+          "type": "task_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ready'"
+        },
+        "task_file_info_id": {
+          "name": "task_file_info_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "task_created_at": {
+          "name": "task_created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "task_updated_at": {
+          "name": "task_updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "task_created_by": {
+          "name": "task_created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "task_updated_by": {
+          "name": "task_updated_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "task_is_deleted": {
+          "name": "task_is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tasks_task_project_id_projects_project_id_fk": {
+          "name": "tasks_task_project_id_projects_project_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "task_project_id"
+          ],
+          "columnsTo": [
+            "project_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "tasks_task_file_info_id_file_info_file_info_id_fk": {
+          "name": "tasks_task_file_info_id_file_info_file_info_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "file_info",
+          "columnsFrom": [
+            "task_file_info_id"
+          ],
+          "columnsTo": [
+            "file_info_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "tasks_task_created_by_users_user_id_fk": {
+          "name": "tasks_task_created_by_users_user_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "users",
+          "columnsFrom": [
+            "task_created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "tasks_task_updated_by_users_user_id_fk": {
+          "name": "tasks_task_updated_by_users_user_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "users",
+          "columnsFrom": [
+            "task_updated_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tasks_users": {
+      "name": "tasks_users",
+      "schema": "",
+      "columns": {
+        "task_id": {
+          "name": "task_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tasks_users_task_id_tasks_task_id_fk": {
+          "name": "tasks_users_task_id_tasks_task_id_fk",
+          "tableFrom": "tasks_users",
+          "tableTo": "tasks",
+          "columnsFrom": [
+            "task_id"
+          ],
+          "columnsTo": [
+            "task_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "tasks_users_user_id_users_user_id_fk": {
+          "name": "tasks_users_user_id_users_user_id_fk",
+          "tableFrom": "tasks_users",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "tasks_users_task_id_user_id_pk": {
+          "name": "tasks_users_task_id_user_id_pk",
+          "columns": [
+            "task_id",
+            "user_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.occupations": {
+      "name": "occupations",
+      "schema": "",
+      "columns": {
+        "occupation_id": {
+          "name": "occupation_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "occupations_occupation_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "occupation_ar_name": {
+          "name": "occupation_ar_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "occupation_en_name": {
+          "name": "occupation_en_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "occupation_is_deleted": {
+          "name": "occupation_is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.projects_groups": {
+      "name": "projects_groups",
+      "schema": "",
+      "columns": {
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group_id": {
+          "name": "group_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "projects_groups_project_id_projects_project_id_fk": {
+          "name": "projects_groups_project_id_projects_project_id_fk",
+          "tableFrom": "projects_groups",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "project_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "projects_groups_group_id_groups_group_id_fk": {
+          "name": "projects_groups_group_id_groups_group_id_fk",
+          "tableFrom": "projects_groups",
+          "tableTo": "groups",
+          "columnsFrom": [
+            "group_id"
+          ],
+          "columnsTo": [
+            "group_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "projects_groups_project_id_group_id_pk": {
+          "name": "projects_groups_project_id_group_id_pk",
+          "columns": [
+            "project_id",
+            "group_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.projects": {
+      "name": "projects",
+      "schema": "",
+      "columns": {
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "projects_project_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "project_name": {
+          "name": "project_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "project_latitude": {
+          "name": "project_latitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "project_longitude": {
+          "name": "project_longitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "project_address": {
+          "name": "project_address",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "project_description": {
+          "name": "project_description",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "company_id": {
+          "name": "company_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "project_status": {
+          "name": "project_status",
+          "type": "project_status[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "project_radius": {
+          "name": "project_radius",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 100
+        },
+        "project_created_at": {
+          "name": "project_created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "project_updated_at": {
+          "name": "project_updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "project_created_by": {
+          "name": "project_created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "project_updated_by": {
+          "name": "project_updated_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "project_is_deleted": {
+          "name": "project_is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "projects_company_id_companies_company_id_fk": {
+          "name": "projects_company_id_companies_company_id_fk",
+          "tableFrom": "projects",
+          "tableTo": "companies",
+          "columnsFrom": [
+            "company_id"
+          ],
+          "columnsTo": [
+            "company_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "projects_project_created_by_users_user_id_fk": {
+          "name": "projects_project_created_by_users_user_id_fk",
+          "tableFrom": "projects",
+          "tableTo": "users",
+          "columnsFrom": [
+            "project_created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "projects_project_updated_by_users_user_id_fk": {
+          "name": "projects_project_updated_by_users_user_id_fk",
+          "tableFrom": "projects",
+          "tableTo": "users",
+          "columnsFrom": [
+            "project_updated_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "projects_project_name_company_id_unique": {
+          "name": "projects_project_name_company_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "project_name",
+            "company_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.projects_users": {
+      "name": "projects_users",
+      "schema": "",
+      "columns": {
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "projects_users_project_id_projects_project_id_fk": {
+          "name": "projects_users_project_id_projects_project_id_fk",
+          "tableFrom": "projects_users",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "project_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "projects_users_user_id_users_user_id_fk": {
+          "name": "projects_users_user_id_users_user_id_fk",
+          "tableFrom": "projects_users",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "projects_users_project_id_user_id_pk": {
+          "name": "projects_users_project_id_user_id_pk",
+          "columns": [
+            "project_id",
+            "user_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.groups": {
+      "name": "groups",
+      "schema": "",
+      "columns": {
+        "group_id": {
+          "name": "group_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "groups_group_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "group_name": {
+          "name": "group_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "group_description": {
+          "name": "group_description",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group_is_deleted": {
+          "name": "group_is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "group_company_id": {
+          "name": "group_company_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group_created_at": {
+          "name": "group_created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "group_updated_at": {
+          "name": "group_updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "group_created_by": {
+          "name": "group_created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "group_updated_by": {
+          "name": "group_updated_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "groups_group_company_id_companies_company_id_fk": {
+          "name": "groups_group_company_id_companies_company_id_fk",
+          "tableFrom": "groups",
+          "tableTo": "companies",
+          "columnsFrom": [
+            "group_company_id"
+          ],
+          "columnsTo": [
+            "company_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "groups_group_created_by_users_user_id_fk": {
+          "name": "groups_group_created_by_users_user_id_fk",
+          "tableFrom": "groups",
+          "tableTo": "users",
+          "columnsFrom": [
+            "group_created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "groups_group_updated_by_users_user_id_fk": {
+          "name": "groups_group_updated_by_users_user_id_fk",
+          "tableFrom": "groups",
+          "tableTo": "users",
+          "columnsFrom": [
+            "group_updated_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "groups_group_name_group_company_id_unique": {
+          "name": "groups_group_name_group_company_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "group_name",
+            "group_company_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.file_info": {
+      "name": "file_info",
+      "schema": "",
+      "columns": {
+        "file_info_id": {
+          "name": "file_info_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "file_info_file_info_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "file_info_type": {
+          "name": "file_info_type",
+          "type": "file_info_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'audio'"
+        },
+        "file_info_name": {
+          "name": "file_info_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_info_path": {
+          "name": "file_info_path",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "file_info_size": {
+          "name": "file_info_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "file_info_data": {
+          "name": "file_info_data",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_info_created_at": {
+          "name": "file_info_created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "file_info_updated_at": {
+          "name": "file_info_updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "file_info_created_by": {
+          "name": "file_info_created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "file_info_updated_by": {
+          "name": "file_info_updated_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "file_info_is_deleted": {
+          "name": "file_info_is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "file_info_file_info_created_by_users_user_id_fk": {
+          "name": "file_info_file_info_created_by_users_user_id_fk",
+          "tableFrom": "file_info",
+          "tableTo": "users",
+          "columnsFrom": [
+            "file_info_created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "file_info_file_info_updated_by_users_user_id_fk": {
+          "name": "file_info_file_info_updated_by_users_user_id_fk",
+          "tableFrom": "file_info",
+          "tableTo": "users",
+          "columnsFrom": [
+            "file_info_updated_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.project_files": {
+      "name": "project_files",
+      "schema": "",
+      "columns": {
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "file_info_id": {
+          "name": "file_info_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "project_files_project_id_projects_project_id_fk": {
+          "name": "project_files_project_id_projects_project_id_fk",
+          "tableFrom": "project_files",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "project_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "project_files_file_info_id_file_info_file_info_id_fk": {
+          "name": "project_files_file_info_id_file_info_file_info_id_fk",
+          "tableFrom": "project_files",
+          "tableTo": "file_info",
+          "columnsFrom": [
+            "file_info_id"
+          ],
+          "columnsTo": [
+            "file_info_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "project_files_project_id_file_info_id_pk": {
+          "name": "project_files_project_id_file_info_id_pk",
+          "columns": [
+            "project_id",
+            "file_info_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.attendances": {
+      "name": "attendances",
+      "schema": "",
+      "columns": {
+        "attendance_id": {
+          "name": "attendance_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "attendances_attendance_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "attendance_user_id": {
+          "name": "attendance_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attendance_shift_id": {
+          "name": "attendance_shift_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attendance_status": {
+          "name": "attendance_status",
+          "type": "attendance_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'validated'"
+        },
+        "attendance_check_in_time": {
+          "name": "attendance_check_in_time",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attendance_check_out_time": {
+          "name": "attendance_check_out_time",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attendance_check_in_latitude": {
+          "name": "attendance_check_in_latitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attendance_check_in_longitude": {
+          "name": "attendance_check_in_longitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attendance_check_out_latitude": {
+          "name": "attendance_check_out_latitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attendance_check_out_longitude": {
+          "name": "attendance_check_out_longitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attendance_created_at": {
+          "name": "attendance_created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "attendance_updated_at": {
+          "name": "attendance_updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "attendance_created_by": {
+          "name": "attendance_created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attendance_updated_by": {
+          "name": "attendance_updated_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attendance_is_deleted": {
+          "name": "attendance_is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "attendances_attendance_user_id_users_user_id_fk": {
+          "name": "attendances_attendance_user_id_users_user_id_fk",
+          "tableFrom": "attendances",
+          "tableTo": "users",
+          "columnsFrom": [
+            "attendance_user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "attendances_attendance_shift_id_shifts_shift_id_fk": {
+          "name": "attendances_attendance_shift_id_shifts_shift_id_fk",
+          "tableFrom": "attendances",
+          "tableTo": "shifts",
+          "columnsFrom": [
+            "attendance_shift_id"
+          ],
+          "columnsTo": [
+            "shift_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "attendances_attendance_created_by_users_user_id_fk": {
+          "name": "attendances_attendance_created_by_users_user_id_fk",
+          "tableFrom": "attendances",
+          "tableTo": "users",
+          "columnsFrom": [
+            "attendance_created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "attendances_attendance_updated_by_users_user_id_fk": {
+          "name": "attendances_attendance_updated_by_users_user_id_fk",
+          "tableFrom": "attendances",
+          "tableTo": "users",
+          "columnsFrom": [
+            "attendance_updated_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.exceptions": {
+      "name": "exceptions",
+      "schema": "",
+      "columns": {
+        "exception_id": {
+          "name": "exception_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "exceptions_exception_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "exception_type": {
+          "name": "exception_type",
+          "type": "exception_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "exception_attendance_id": {
+          "name": "exception_attendance_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "exception_date": {
+          "name": "exception_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "exception_details": {
+          "name": "exception_details",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "exception_user_id": {
+          "name": "exception_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "exception_shift_id": {
+          "name": "exception_shift_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "exception_created_by": {
+          "name": "exception_created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "exception_updated_by": {
+          "name": "exception_updated_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "exception_created_at": {
+          "name": "exception_created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "exception_updated_at": {
+          "name": "exception_updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "exception_is_deleted": {
+          "name": "exception_is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "exceptions_exception_attendance_id_attendances_attendance_id_fk": {
+          "name": "exceptions_exception_attendance_id_attendances_attendance_id_fk",
+          "tableFrom": "exceptions",
+          "tableTo": "attendances",
+          "columnsFrom": [
+            "exception_attendance_id"
+          ],
+          "columnsTo": [
+            "attendance_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "exceptions_exception_user_id_users_user_id_fk": {
+          "name": "exceptions_exception_user_id_users_user_id_fk",
+          "tableFrom": "exceptions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "exception_user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "exceptions_exception_shift_id_shifts_shift_id_fk": {
+          "name": "exceptions_exception_shift_id_shifts_shift_id_fk",
+          "tableFrom": "exceptions",
+          "tableTo": "shifts",
+          "columnsFrom": [
+            "exception_shift_id"
+          ],
+          "columnsTo": [
+            "shift_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "exceptions_exception_created_by_users_user_id_fk": {
+          "name": "exceptions_exception_created_by_users_user_id_fk",
+          "tableFrom": "exceptions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "exception_created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "exceptions_exception_updated_by_users_user_id_fk": {
+          "name": "exceptions_exception_updated_by_users_user_id_fk",
+          "tableFrom": "exceptions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "exception_updated_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.shift_assignments": {
+      "name": "shift_assignments",
+      "schema": "",
+      "columns": {
+        "assignment_id": {
+          "name": "assignment_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "shift_assignments_assignment_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "shift_id": {
+          "name": "shift_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assignment_status": {
+          "name": "assignment_status",
+          "type": "assignment_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "assignment_start_time": {
+          "name": "assignment_start_time",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assignment_end_time": {
+          "name": "assignment_end_time",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assignment_created_at": {
+          "name": "assignment_created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "assignment_updated_at": {
+          "name": "assignment_updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "assignment_is_deleted": {
+          "name": "assignment_is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "assignment_created_by": {
+          "name": "assignment_created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assignment_updated_by": {
+          "name": "assignment_updated_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shift_assignments_shift_id_shifts_shift_id_fk": {
+          "name": "shift_assignments_shift_id_shifts_shift_id_fk",
+          "tableFrom": "shift_assignments",
+          "tableTo": "shifts",
+          "columnsFrom": [
+            "shift_id"
+          ],
+          "columnsTo": [
+            "shift_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "shift_assignments_user_id_users_user_id_fk": {
+          "name": "shift_assignments_user_id_users_user_id_fk",
+          "tableFrom": "shift_assignments",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "shift_assignments_assignment_created_by_users_user_id_fk": {
+          "name": "shift_assignments_assignment_created_by_users_user_id_fk",
+          "tableFrom": "shift_assignments",
+          "tableTo": "users",
+          "columnsFrom": [
+            "assignment_created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "shift_assignments_assignment_updated_by_users_user_id_fk": {
+          "name": "shift_assignments_assignment_updated_by_users_user_id_fk",
+          "tableFrom": "shift_assignments",
+          "tableTo": "users",
+          "columnsFrom": [
+            "assignment_updated_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.shifts": {
+      "name": "shifts",
+      "schema": "",
+      "columns": {
+        "shift_id": {
+          "name": "shift_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "shifts_shift_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "shift_name": {
+          "name": "shift_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "shift_start_time": {
+          "name": "shift_start_time",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "shift_end_time": {
+          "name": "shift_end_time",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shift_status": {
+          "name": "shift_status",
+          "type": "shift_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "shift_flexibility": {
+          "name": "shift_flexibility",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "shift_grace_time": {
+          "name": "shift_grace_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 10
+        },
+        "shift_created_at": {
+          "name": "shift_created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "shift_updated_at": {
+          "name": "shift_updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "shift_is_deleted": {
+          "name": "shift_is_deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "shift_created_by": {
+          "name": "shift_created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shift_updated_by": {
+          "name": "shift_updated_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shifts_project_id_projects_project_id_fk": {
+          "name": "shifts_project_id_projects_project_id_fk",
+          "tableFrom": "shifts",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "project_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "shifts_shift_created_by_users_user_id_fk": {
+          "name": "shifts_shift_created_by_users_user_id_fk",
+          "tableFrom": "shifts",
+          "tableTo": "users",
+          "columnsFrom": [
+            "shift_created_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "shifts_shift_updated_by_users_user_id_fk": {
+          "name": "shifts_shift_updated_by_users_user_id_fk",
+          "tableFrom": "shifts",
+          "tableTo": "users",
+          "columnsFrom": [
+            "shift_updated_by"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.company_size": {
+      "name": "company_size",
+      "schema": "public",
+      "values": [
+        "1-3",
+        "4-10",
+        "11-49",
+        "50-99",
+        "100+"
+      ]
+    },
+    "public.user_role": {
+      "name": "user_role",
+      "schema": "public",
+      "values": [
+        "super_admin",
+        "company_admin",
+        "project_manager",
+        "project_member"
+      ]
+    },
+    "public.user_status": {
+      "name": "user_status",
+      "schema": "public",
+      "values": [
+        "active",
+        "pending",
+        "inactive",
+        "deleted"
+      ]
+    },
+    "public.user_type": {
+      "name": "user_type",
+      "schema": "public",
+      "values": [
+        "registered_user",
+        "invited_user"
+      ]
+    },
+    "public.task_status": {
+      "name": "task_status",
+      "schema": "public",
+      "values": [
+        "ready",
+        "active",
+        "in_progress",
+        "complete",
+        "cancelled"
+      ]
+    },
+    "public.project_status": {
+      "name": "project_status",
+      "schema": "public",
+      "values": [
+        "active",
+        "bid",
+        "important",
+        "in_progress",
+        "complete",
+        "paid"
+      ]
+    },
+    "public.file_info_type": {
+      "name": "file_info_type",
+      "schema": "public",
+      "values": [
+        "image",
+        "audio",
+        "video",
+        "document",
+        "other"
+      ]
+    },
+    "public.attendance_status": {
+      "name": "attendance_status",
+      "schema": "public",
+      "values": [
+        "validated",
+        "invalidated",
+        "absent",
+        "late",
+        "early_departure",
+        "on_leave",
+        "auto_resolved"
+      ]
+    },
+    "public.exception_type": {
+      "name": "exception_type",
+      "schema": "public",
+      "values": [
+        "late",
+        "early_departure",
+        "on_leave",
+        "auto_resolved",
+        "full_day_adjustment",
+        "check_in_adjustment",
+        "check_out_adjustment"
+      ]
+    },
+    "public.assignment_status": {
+      "name": "assignment_status",
+      "schema": "public",
+      "values": [
+        "active",
+        "inactive"
+      ]
+    },
+    "public.shift_status": {
+      "name": "shift_status",
+      "schema": "public",
+      "values": [
+        "active",
+        "inactive"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
